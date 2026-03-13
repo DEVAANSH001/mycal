@@ -11,6 +11,7 @@ Cal is a full-stack scheduling app where hosts can publish event links and guest
 - Global buffer time applied to all event types
 - Public profile and public booking pages
 - Slot generation with conflict prevention and timezone handling
+- Robust double-booking prevention using PostgreSQL transactions and row-level locking
 - Booking management (upcoming/past/cancelled)
 - Cancel and reschedule flows with email notifications
 
@@ -256,7 +257,8 @@ Implemented in `backend/src/controllers/public.controller.js`:
 8. Return slot list and host timezone
 
 On booking creation (`POST /book`):
-- validates conflicts again
+- uses a database transaction with a `FOR UPDATE` row-level lock to perfectly prevent concurrent double-booking race conditions
+- validates conflicts again within the locked transaction
 - inserts booking with status `upcoming`
 - generates Jitsi link
 - sends confirmation/notification emails asynchronously

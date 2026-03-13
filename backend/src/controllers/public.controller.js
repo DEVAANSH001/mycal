@@ -342,58 +342,72 @@ export const createBooking = async (req, res) => {
 
     if (!eventType) return res.status(404).json({ message: "Event not found" });
 
-    // Calculate end time
     const endTime = minutesToTime(
       timeToMinutes(startTime) + eventType.duration
     );
 
-    // Check double booking across all user's event types
-    const existingBookings = await db
-      .select({ startTime: bookings.startTime, endTime: bookings.endTime })
-      .from(bookings)
-      .innerJoin(eventTypes, eq(bookings.eventTypeId, eventTypes.id))
-      .where(
-        and(
-          eq(eventTypes.userId, user.id),
-          eq(bookings.date, date),
-          eq(bookings.status, "upcoming")
-        )
-      );
+    // ── TRANSACTION STARTS HERE ──────────────────────
+    const result = await db.transaction(async (tx) => {
+      // Step 1 — Lock the eventType row. 
+      // We MUST lock a row that ALREADY exists. If we only lock `bookings`, 
+      // and there are no bookings yet, the lock does nothing and the race condition remains.
+      await tx
+        .select()
+        .from(eventTypes)
+        .where(eq(eventTypes.id, eventType.id))
+        .for("update");
 
-    const newStartMins = timeToMinutes(startTime);
-    const newEndMins = newStartMins + eventType.duration;
+      // Step 2 — Check for conflicts INSIDE transaction
+      const existingBookings = await tx
+        .select({ startTime: bookings.startTime, endTime: bookings.endTime })
+        .from(bookings)
+        .innerJoin(eventTypes, eq(bookings.eventTypeId, eventTypes.id))
+        .where(
+          and(
+            eq(eventTypes.userId, user.id),
+            eq(bookings.date, date),
+            eq(bookings.status, "upcoming")
+          )
+        );
 
-    const hasConflict = existingBookings.some((b) => {
-      const bStart = timeToMinutes(b.startTime);
-      const bEnd = timeToMinutes(b.endTime);
-      return Math.max(newStartMins, bStart) < Math.min(newEndMins, bEnd);
+      // Step 3 — Check overlap
+      const newStartMins = timeToMinutes(startTime);
+      const newEndMins   = newStartMins + eventType.duration;
+
+      const hasConflict = existingBookings.some((b) => {
+        const bStart = timeToMinutes(b.startTime);
+        const bEnd   = timeToMinutes(b.endTime);
+        return Math.max(newStartMins, bStart) < Math.min(newEndMins, bEnd);
+      });
+
+      // Step 4 — Abort transaction if conflict
+      if (hasConflict) {
+        throw new Error("SLOT_TAKEN");
+      }
+
+      // Create Jitsi Meet link
+      let meetLink = generateJitsiLink(bookerName);
+
+      // Step 5 — Safe to insert now
+      const [newBooking] = await tx
+        .insert(bookings)
+        .values({
+          eventTypeId:  eventType.id,
+          bookerName,
+          bookerEmail,
+          date,
+          startTime,
+          endTime,
+          note:     note || null,
+          meetLink: meetLink || null,
+          status:   "upcoming",
+          answers:  answers ? JSON.stringify(answers) : null,
+        })
+        .returning();
+
+      return { newBooking, meetLink };
     });
-
-    if (hasConflict) {
-      return res.status(409).json({ message: "This slot is already booked" });
-    }
-
-    // Create Jitsi Meet link
-    let meetLink      = generateJitsiLink(bookerName);
-    let googleEventId = null;
-
-    // Create booking (include meet link if we got one)
-    const [newBooking] = await db
-      .insert(bookings)
-      .values({
-        eventTypeId: eventType.id,
-        bookerName,
-        bookerEmail,
-        date,
-        startTime,
-        endTime,
-        note:          note || null,
-        meetLink:      meetLink      || null,
-        googleEventId: googleEventId || null,
-        answers:       answers && Object.keys(answers).length ? JSON.stringify(answers) : null,
-        status:        "upcoming",
-      })
-      .returning();
+    // ── TRANSACTION ENDS — lock released ─────────────
 
     // Send confirmation emails to both parties (non-blocking)
     const emailPayload = {
@@ -406,7 +420,7 @@ export const createBooking = async (req, res) => {
       startTime,
       endTime,
       note:     note || null,
-      meetLink: meetLink || null,
+      meetLink: result.meetLink || null,
     };
 
     Promise.all([
@@ -415,8 +429,8 @@ export const createBooking = async (req, res) => {
     ]).catch((err) => console.error("[email] Failed to send booking emails:", err));
 
     res.status(201).json({
-      booking: newBooking,
-      meetLink,
+      booking: result.newBooking,
+      meetLink: result.meetLink,
       eventType: {
         title:    eventType.title,
         duration: eventType.duration,
@@ -426,7 +440,16 @@ export const createBooking = async (req, res) => {
         timezone: user.timezone,
       },
     });
+
   } catch (err) {
+    // Handle slot taken error from inside transaction
+    if (err.message === "SLOT_TAKEN") {
+      return res.status(409).json({
+        message: "This slot was just booked. Please choose another time.",
+      });
+    }
+    
+    // Handle all other errors
     res.status(500).json({ message: err.message });
   }
 };
