@@ -12,6 +12,8 @@ import {
   X,
   Video,
   CalendarDays,
+  Filter,
+  Check,
 } from "lucide-react";
 
 type FilterType = "upcoming" | "past" | "cancelled";
@@ -98,7 +100,12 @@ export default function BookingsPage() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [showRowsMenu, setShowRowsMenu] = useState(false);
 
+  const [filterMenuOpen, setFilterMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchField, setSearchField] = useState<string>("all");
+
   const menuRef = useRef<HTMLDivElement>(null);
+  const filterBtnRef = useRef<HTMLDivElement>(null);
 
   const fetchBookings = useCallback(async () => {
     setLoading(true);
@@ -121,6 +128,9 @@ export default function BookingsPage() {
     const handler = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
         setMenuOpen(null);
+      }
+      if (filterBtnRef.current && !filterBtnRef.current.contains(e.target as Node)) {
+        setFilterMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", handler);
@@ -200,7 +210,29 @@ export default function BookingsPage() {
     }
   };
 
-  const allRows = bookings;
+  const allRows = bookings.filter((b) => {
+    if (!searchQuery) return true;
+    const q = searchQuery.toLowerCase();
+    
+    if (searchField === "all") {
+      return (
+        b.eventTitle.toLowerCase().includes(q) ||
+        b.bookerName.toLowerCase().includes(q) ||
+        b.bookerEmail.toLowerCase().includes(q) ||
+        String(b.id) === q
+      );
+    } else if (searchField === "eventTitle") {
+      return b.eventTitle.toLowerCase().includes(q);
+    } else if (searchField === "bookerName") {
+      return b.bookerName.toLowerCase().includes(q);
+    } else if (searchField === "bookerEmail") {
+      return b.bookerEmail.toLowerCase().includes(q);
+    } else if (searchField === "id") {
+      return String(b.id) === q;
+    }
+    return true;
+  });
+
   const totalRows = allRows.length;
   const totalPages = Math.max(1, Math.ceil(totalRows / rowsPerPage));
   const start = (page - 1) * rowsPerPage;
@@ -221,20 +253,80 @@ export default function BookingsPage() {
         </p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-1 px-5 sm:px-8 py-4 border-b border-[#1f1f1f]">
-        {FILTERS.map((f) => (
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 px-5 sm:px-8 py-4 border-b border-[#1f1f1f]">
+        <div className="flex flex-wrap items-center gap-1">
+          {FILTERS.map((f) => (
+            <button
+              key={f.value}
+              onClick={() => setFilter(f.value)}
+              className={`px-3.5 py-1.5 rounded-lg text-sm transition-colors ${
+                filter === f.value
+                  ? "bg-[#1f1f1f] text-white font-medium border border-[#333]"
+                  : "text-[#888] hover:text-white hover:bg-[#1a1a1a]"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+        
+        <div className="relative" ref={filterBtnRef}>
           <button
-            key={f.value}
-            onClick={() => setFilter(f.value)}
-            className={`px-3.5 py-1.5 rounded-lg text-sm transition-colors ${
-              filter === f.value
-                ? "bg-[#1f1f1f] text-white font-medium border border-[#333]"
-                : "text-[#888] hover:text-white hover:bg-[#1a1a1a]"
+            onClick={() => setFilterMenuOpen(!filterMenuOpen)}
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-sm transition-colors border ${
+              filterMenuOpen || searchQuery
+                ? "bg-[#1a1a1a] text-white border-[#444]"
+                : "bg-transparent text-[#ccc] border-[#2a2a2a] hover:bg-[#1a1a1a] hover:text-white"
             }`}
           >
-            {f.label}
+            <Filter size={14} /> Filter
+            {searchQuery && (
+              <span className="bg-white text-black text-[10px] font-bold px-1.5 rounded-sm ml-1">1</span>
+            )}
           </button>
-        ))}
+
+          {filterMenuOpen && (
+            <div className="absolute right-0 sm:right-0 left-0 sm:left-auto top-10 mt-1 w-full sm:w-64 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl shadow-2xl py-2 z-50">
+              <div className="px-3 mb-2">
+                <input
+                  type="text"
+                  autoFocus
+                  placeholder="Search"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value);
+                    setPage(1);
+                  }}
+                  className="w-full bg-transparent border border-[#333] rounded-md px-3 py-1.5 text-sm text-white placeholder-[#666] focus:outline-none focus:border-[#555]"
+                />
+              </div>
+              
+              <div className="flex flex-col">
+                {[
+                  { label: "All fields", value: "all" },
+                  { label: "Event Type", value: "eventTitle" },
+                  { label: "Attendees Name", value: "bookerName" },
+                  { label: "Attendees Email", value: "bookerEmail" },
+                  { label: "Booking UID", value: "id" },
+                ].map((field) => (
+                  <button
+                    key={field.value}
+                    onClick={() => {
+                      setSearchField(field.value);
+                      setPage(1);
+                    }}
+                    className={`flex items-center justify-between w-full px-4 py-2 text-sm text-left transition-colors hover:bg-[#252525] ${
+                      searchField === field.value ? "text-white" : "text-[#aaa]"
+                    }`}
+                  >
+                    {field.label}
+                    {searchField === field.value && <Check size={14} className="text-white" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="px-4 sm:px-8 py-5">
