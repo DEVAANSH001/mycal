@@ -1,8 +1,8 @@
-## Cal-clone a Scheduling App 
+## Cal-clone a Scheduling Platform
 
 Cal is a full-stack scheduling app where hosts can publish event links and guests can book time slots.
 
-## What is currently implemented
+## Features
 
 - User authentication (register / login / demo login) with JWT — demo credentials: `devaanshdubey2211@gmail.com` / `demo123`
 - Event type management (create, update, delete, activate/deactivate)
@@ -13,7 +13,7 @@ Cal is a full-stack scheduling app where hosts can publish event links and guest
 - Slot generation with conflict prevention and timezone handling
 - Booking management (upcoming/past/cancelled)
 - Cancel and reschedule flows with email notifications
-- Demo seed user and demo login UI button
+
 
 
 ## Tech Stack
