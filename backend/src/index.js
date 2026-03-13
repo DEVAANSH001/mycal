@@ -13,7 +13,10 @@ const app  = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:3000",
+  origin: [
+    process.env.FRONTEND_URL || "https://mycal-lyart.vercel.app",
+    "http://localhost:3000",
+  ],
   credentials: true,
 }));
 app.use(express.json());
@@ -27,6 +30,10 @@ app.use("/api/public",       publicRoutes);       // ← no auth
 
 app.get("/", (req, res) => {
   res.json({ message: "Cal Clone API running ✅" });
+});
+
+app.get("/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
 });
 
 app.listen(PORT, () => {
