@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build":  "npm install",
+    "start":   "node src/index.js",
     "dev": "tsx watch src/index.js",
     "seed": "tsx src/seed.js",
     "db:push": "drizzle-kit push",
