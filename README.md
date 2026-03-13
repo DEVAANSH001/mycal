@@ -1,6 +1,6 @@
-# MyCal (Cal.com-style Scheduling App)
+## Cal-clone a Scheduling App 
 
-MyCal is a full-stack scheduling app where hosts can publish event links and guests can book time slots.
+Cal is a full-stack scheduling app where hosts can publish event links and guests can book time slots.
 
 ## What is currently implemented
 
