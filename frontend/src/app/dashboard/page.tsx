@@ -336,26 +336,6 @@ export default function EventTypesPage() {
         </button>
       </div>
 
-      {/* ── MOBILE BOTTOM NAVIGATION (Hidden on desktop) ── */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#111] border-t border-[#1f1f1f] flex items-center justify-around px-2 z-40">
-        <button className="flex flex-col items-center gap-1.5 text-white">
-          <Link2 size={20} />
-          <span className="text-[10px] font-medium">Event types</span>
-        </button>
-        <button className="flex flex-col items-center gap-1.5 text-[#666] hover:text-[#aaa]">
-          <CalendarIcon size={20} />
-          <span className="text-[10px] font-medium">Bookings</span>
-        </button>
-        <button className="flex flex-col items-center gap-1.5 text-[#666] hover:text-[#aaa]">
-          <Clock size={20} />
-          <span className="text-[10px] font-medium">Availability</span>
-        </button>
-        <button className="flex flex-col items-center gap-1.5 text-[#666] hover:text-[#aaa]">
-          <MoreHorizontal size={20} />
-          <span className="text-[10px] font-medium">More</span>
-        </button>
-      </div>
-
       {/* ── MODALS (Edit & Delete remain unchanged) ── */}
       {/* ... [Keep your existing showModal and deleteId modal code here] ... */}
       {showModal && (

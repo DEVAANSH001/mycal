@@ -10,7 +10,6 @@ import {
   Clock,
   ExternalLink,
   Copy,
-  Settings,
   LogOut,
   ChevronDown,
   Menu,
@@ -41,14 +40,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <button
         type="button"
         onClick={() => setMobileNavOpen(true)}
-        className="lg:hidden fixed top-4 left-4 z-40 w-10 h-10 rounded-lg border border-[#2a2a2a] bg-[#171717] flex items-center justify-center text-white shadow-lg"
+        className="lg:hidden fixed top-4 left-4 z-50 w-10 h-10 rounded-lg border border-[#2a2a2a] bg-[#171717] flex items-center justify-center text-white shadow-lg"
         aria-label="Open navigation menu"
       >
         <Menu size={18} />
       </button>
 
       <div
-        className={`lg:hidden fixed inset-0 z-30 bg-black/60 transition-opacity duration-200 ${
+        className={`lg:hidden fixed inset-0 z-40 bg-black/60 transition-opacity duration-200 ${
           mobileNavOpen ? "opacity-100" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => setMobileNavOpen(false)}
@@ -56,7 +55,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
       {/* ── Sidebar ─────────────────────────────────────── */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-[220px] shrink-0 flex flex-col border-r border-[#2a2a2a] bg-[#1a1a1a] transition-transform duration-200 ease-out lg:static lg:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 w-[220px] shrink-0 flex flex-col border-r border-[#2a2a2a] bg-[#1a1a1a] pb-16 lg:pb-0 transition-transform duration-200 ease-out lg:static lg:translate-x-0 ${
           mobileNavOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -149,9 +148,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       {/* ── Main content ─────────────────────────────────── */}
-      <main className="flex-1 min-w-0 overflow-y-auto pt-16 lg:pt-0">
+      <main className="flex-1 min-w-0 overflow-y-auto pt-16 lg:pt-0 pb-16 sm:pb-0">
         {children}
       </main>
+
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 h-16 bg-[#111] border-t border-[#1f1f1f] flex items-center justify-around px-2 z-40">
+        {navItems.map((item) => {
+          const active =
+            item.href === "/dashboard"
+              ? pathname === "/dashboard"
+              : pathname.startsWith(item.href);
+
+          return (
+            <Link
+              key={`mobile-${item.href}`}
+              href={item.href}
+              className={`flex flex-col items-center gap-1.5 transition-colors ${
+                active ? "text-white" : "text-[#666] hover:text-[#aaa]"
+              }`}
+            >
+              <item.icon size={20} />
+              <span className="text-[10px] font-medium">{item.label}</span>
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }
