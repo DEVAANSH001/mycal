@@ -23,7 +23,10 @@ export default function Hero() {
           </p>
 
           <div className="flex flex-col w-full max-w-md gap-3 mt-4">
-            <button className="w-full bg-gray-900 text-white font-medium py-3.5 px-6 rounded-full flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors">
+            <Link
+              href="/login"
+              className="w-full bg-gray-900 text-white font-medium py-3.5 px-6 rounded-full flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors"
+            >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
                   fill="currentColor"
@@ -43,8 +46,8 @@ export default function Hero() {
                 />
               </svg>
               Sign up with Google
-            </button>
-            <Link href="/signup" className="w-full">
+            </Link>
+            <Link href="/login" className="w-full">
               <button className="w-full bg-white text-gray-900 font-medium py-3.5 px-6 rounded-full border border-gray-200 flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
                 Sign up with email <span className="text-gray-400">›</span>
               </button>

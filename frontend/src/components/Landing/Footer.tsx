@@ -70,7 +70,7 @@ export default function Footer() {
         {/* Left Column */}
         <div className="lg:col-span-4 flex flex-col gap-8">
           <div>
-            <Link href="/" className="font-bold text-2xl tracking-tight text-gray-900">
+            <Link href="/login" className="font-bold text-2xl tracking-tight text-gray-900">
               Cal.com
             </Link>
             <p className="text-gray-500 text-sm mt-4 leading-relaxed max-w-xs">
@@ -137,7 +137,7 @@ export default function Footer() {
           </div>
 
           <p className="text-sm text-gray-500">
-            Need Help? <Link href="#" className="text-blue-600 hover:underline">support@cal.com</Link> or visit <Link href="#" className="text-blue-600 hover:underline">cal.com/help</Link>.
+            Need Help? <Link href="/login" className="text-blue-600 hover:underline">support@cal.com</Link> or visit <Link href="/login" className="text-blue-600 hover:underline">cal.com/help</Link>.
           </p>
         </div>
 
@@ -149,7 +149,7 @@ export default function Footer() {
               <ul className="flex flex-col gap-3">
                 {links.map((link) => (
                   <li key={link}>
-                    <Link href="#" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
+                    <Link href="/login" className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
                       {link}
                     </Link>
                   </li>

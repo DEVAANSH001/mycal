@@ -38,7 +38,7 @@ export default function ConfirmedPage() {
   return (
     <div className="min-h-screen bg-[#0f0f0f] flex flex-col items-center justify-center px-4 py-10">
 
-      <div className="w-full max-w-md bg-[#111] border border-[#2a2a2a] rounded-2xl p-8 shadow-2xl text-center">
+      <div className="w-full max-w-md bg-[#111] border border-[#2a2a2a] rounded-2xl p-6 sm:p-8 shadow-2xl text-center">
 
         {/* Check icon */}
         <div className="w-14 h-14 rounded-full bg-green-500/15 border border-green-500/30 flex items-center justify-center mx-auto mb-5">

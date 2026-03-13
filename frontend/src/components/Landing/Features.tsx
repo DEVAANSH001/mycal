@@ -1,5 +1,6 @@
 import { ChevronDown, Globe, Video } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Features() {
   return (
@@ -14,12 +15,18 @@ export default function Features() {
       </p>
 
       <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-16">
-        <button className="w-full sm:w-auto bg-gray-900 text-white font-medium py-3 px-6 rounded-full flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors">
+        <Link
+          href="/login"
+          className="w-full sm:w-auto bg-gray-900 text-white font-medium py-3 px-6 rounded-full flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors"
+        >
           Get started <span className="text-gray-400">›</span>
-        </button>
-        <button className="w-full sm:w-auto bg-white text-gray-900 font-medium py-3 px-6 rounded-full border border-gray-200 flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
+        </Link>
+        <Link
+          href="/login"
+          className="w-full sm:w-auto bg-white text-gray-900 font-medium py-3 px-6 rounded-full border border-gray-200 flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors"
+        >
           Book a demo <span className="text-gray-400">›</span>
-        </button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">

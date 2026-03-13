@@ -273,9 +273,9 @@ export default function PublicBookingPage() {
     : "";
 
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center py-10">
-      <div className="bg-[#111111] border border-[#262626] rounded-xl flex overflow-hidden shadow-2xl max-w-max mx-auto">
-        <div className="w-[280px] border-r border-[#262626] p-6 flex flex-col">
+    <div className="min-h-screen bg-black flex flex-col items-center justify-center py-6 md:py-10 px-4 md:px-0">
+      <div className="bg-[#111111] border border-[#262626] rounded-xl flex flex-col md:flex-row overflow-hidden shadow-2xl w-full max-w-[1000px] mx-auto md:max-w-max">
+        <div className="w-full md:w-[280px] border-b md:border-b-0 md:border-r border-[#262626] p-5 md:p-6 flex flex-col">
           <div className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center text-xs font-bold text-white mb-4">
             {initials}
           </div>
@@ -345,7 +345,7 @@ export default function PublicBookingPage() {
 
         {!selectedSlot ? (
           <>
-            <div className="p-6 w-[360px]">
+            <div className="p-5 md:p-6 w-full md:w-[360px]">
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-base font-semibold text-white">
                   {MONTHS[currentMonth]} <span className="text-[#666] font-normal">{currentYear}</span>
@@ -406,7 +406,7 @@ export default function PublicBookingPage() {
             </div>
 
             {selectedDate && (
-              <div className="w-[280px] border-l border-[#262626] p-6 flex flex-col h-[400px]">
+              <div className="w-full md:w-[280px] border-t md:border-t-0 md:border-l border-[#262626] p-5 md:p-6 flex flex-col md:h-[400px]">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-white font-medium">{shortFormattedDay}</span>
                   <div className="flex bg-transparent border border-[#333] rounded-md p-0.5">
@@ -457,7 +457,7 @@ export default function PublicBookingPage() {
             )}
           </>
         ) : (
-          <div className="w-[480px] p-8 flex flex-col">
+          <div className="w-full md:w-[480px] p-5 md:p-8 flex flex-col">
               <form onSubmit={handleBook} className="space-y-5">
                 {bookingError && <div className="text-red-400 text-sm">{bookingError}</div>}
 

@@ -68,9 +68,9 @@ export default function PublicProfilePage() {
   const initials = host.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2);
 
   return (
-    <div className="min-h-screen bg-[#101010] flex flex-col items-center px-4 py-16">
+    <div className="min-h-screen bg-[#101010] flex flex-col items-center px-4 py-10 md:py-16">
       {/* Profile header */}
-      <div className="flex flex-col items-center gap-3 mb-10">
+      <div className="flex flex-col items-center gap-3 mb-8 md:mb-10">
         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center text-xl font-bold text-white">
           {initials}
         </div>
